@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Visual Studio Code
+.vscode/
+
+# IntelliJ IDEA
+.idea/
+
+# 로그 파일
+*.log
+
+# SQLite 데이터베이스
+*.sqlite
+
+# Vim 임시 파일
+*.swp
+*.swo
+
+# 가상 환경
+venv/
+env/
+virtualenv/
+
+# 히스토리 파일
+.history/
+
+# Visual Studio Code 서버 설정 파일
+.vscode-server/
+
+# EditorConfig 설정 파일
+.editorconfig
+
+# Java
+*.class
+*.jar
+*.war
+
+# 백업 파일
+*.bak

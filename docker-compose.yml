@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"  # 외부에 노출되는 Flask 애플리케이션의 포트
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=app.py
+    command: flask run --host=0.0.0.0 --port=5000
+
+  so-weak-api:
+    build: .
+    ports:
+      - "8000:8000"  # 내부 API 서비스 포트 (테스트 목적으로 외부에 노출)
+    environment:
+      - FLASK_APP=so_weak_api.py
+    command: flask run --host=0.0.0.0 --port=8000
