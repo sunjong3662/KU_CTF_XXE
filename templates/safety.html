@@ -5,27 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>City Safety Management System</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-image: url('/static/images/safety.jpg');
-            background-size: cover;
-            background-position: center;
-            color: #333;
+     body, html {
+        height: 100%;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-image: url('/static/images/safety.jpg');
+        background-position: center 50%; /* 배경 이미지의 위치를 수직 방향으로 50% 지점에 배치 */
+        background-repeat: no-repeat;
+        background-size: cover; /* 이미지가 컨테이너를 적절히 커버하도록 조정 */
+        background-attachment: fixed; /* 배경 이미지가 스크롤 시 고정되도록 설정 */
+    }
+
+
+    @media (max-width: 768px) {
+        body, html {
+            background-position: center 25%;
         }
+    }
+
+    @media (max-width: 480px) {
+        body, html {
+            background-position: center 15%;
+        }
+    }
         .navbar {
-            background-color: #004a7c;
+            background-color: #333;
             overflow: hidden;
-            padding: 15px 10px;
         }
         .navbar a {
             float: left;
-            color: #f2f2f2;
+            display: block;
+            color: white;
             text-align: center;
-            padding: 12px;
+            padding: 14px 20px;
             text-decoration: none;
-            font-size: 17px;
         }
         .navbar a:hover {
             background-color: #ddd;
@@ -77,7 +90,7 @@
         <div class="status-container">
             <div class="status-item">
                 <h2>Fire Alarms</h2>
-                <p>Active: 3</p>
+                <p>Active: 0</p>
                 <p>Inactive: 12</p>
             </div>
             <div class="status-item">

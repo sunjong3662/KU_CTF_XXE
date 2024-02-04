@@ -15,62 +15,141 @@
             background-size: cover;
             position: relative;
         }
-        .container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.5); /* 불투명도 조정 */
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 60%; /* 너비 비율 조정 */
-            max-width: 700px; /* 최대 너비 설정 */
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around; /* 버튼 사이의 공간을 균등하게 분배 */
-            height: auto; /* 자동으로 높이 조정 */
+            padding: 14px 16px;
+            text-decoration: none;
         }
-        .title {
-            color: #000;
-            margin: 20px 0;
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
         }
-        .button {
-            padding: 15px 20px;
-            margin: 5px 0; /* 버튼 간격 */
-            background: #f2f2f2;
+        .traffic-controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .traffic-controls button {
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #4CAF50; /* 녹색 배경 */
+            color: white; /* 흰색 텍스트 */
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            width: 80%; /* 버튼 너비 */
-            max-width: 300px; /* 버튼 최대 너비 */
-            margin-left: auto;
-            margin-right: auto; /* 가운데 정렬 */
+            font-size: 16px;
         }
-        .button:not(:active):hover {
-            background: #ddd;
+
+        .container {
+            width: 85%;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .button:active {
-            background: #000;
-            color: #fff;
+        .title {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
         }
-        /* 여기에 추가적인 스타일링을 할 수 있습니다. */
+        .video-container {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .video-container iframe {
+            width: 100%;
+            height: 400px; /* Adjust height as needed */
+            border: none;
+            border-radius: 10px;
+        }
+        .status-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .status-item {
+            flex-basis: 48%;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .status-item h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        /* Additional styles */
     </style>
 </head>
 <body>
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="/traffic">Traffic</a>
+        <a href="/safety">Safety</a>
+        <a href="/energy">Energy</a>
+        <a href="/db">Database</a>
+    </div>
     <div class="container">
-        <h1 class="title">교통 설정 페이지</h1>
-        <form method="POST" action="/control-system">
-            <input type="hidden" name="setting" value="traffic_config">
-            <textarea name="xml_data" rows="10" cols="50"></textarea>
-            <br>
-            <button type="submit">설정 적용</button>
-        </form>
-        <div>
-            {{ response_data|safe }} <!-- 파싱된 XML 데이터를 여기에 출력할 수 있도록 설정하세요 -->
+        <h1 class="title">교통 상황 관리</h1>
+        
+        <!-- 모의 CCTV 영상 -->
+        <div class="video-container">
+            <iframe src="path_to_your_mock_cctv_feed" title="CCTV 영상"></iframe>
+        </div>
+
+        <!-- 도로 혼잡도 및 기타 정보 -->
+        <div class="status-container">
+            <div class="status-item">
+                <h2>도로 혼잡도</h2>
+                <p>강남대로: 원활</p>
+                <p>강변북로: 혼잡</p>
+                <!-- 추가 도로 상태 정보 -->
+            </div>
+            <div class="status-item">
+                <h2>교통 상태 업데이트</h2>
+                <p>마지막 업데이트: 5분 전</p>
+                <!-- 실시간 교통 데이터 업데이트 -->
+            </div>
+        </div>
+
+        <!-- 추가 기능 버튼 및 링크 -->
+        <div class="button-container">
+            <!-- 버튼 스타일링은 위에 .button 클래스 참조 -->
+            <button type="button">신호등 제어</button>
+            <button type="button">CCTV 관리</button>
+            <!-- 기타 버튼 추가 -->
         </div>
     </div>
+    <div class="traffic-controls">
+        <button onclick="controlTrafficLights()">신호등 제어</button>
+        <button onclick="configureSettings()">설정</button>
+    </div>
+    
+    <script>
+    // 신호등 제어 버튼 클릭 시 호출될 함수
+    function controlTrafficLights() {
+        alert("error!");
+        // 여기에 신호등 제어 페이지로 이동하거나,
+        // 실제 제어 로직을 구현할 수 있습니다.
+        // 예: window.location.href = '/traffic-lights-control';
+    }
+    
+    // 설정 버튼 클릭 시 호출될 함수
+    function configureSettings() {
+        alert("설정파일이 없음!");
+        // 여기에 설정 페이지로 이동하거나,
+        // 설정을 조정하는 로직을 구현할 수 있습니다.
+        // 예: window.location.href = '/settings';
+    }
+    </script>
 </body>
 </html>
