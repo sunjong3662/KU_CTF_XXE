@@ -3,8 +3,8 @@ from lxml import etree
 
 app = Flask(__name__)
 
-@app.route('/internal-api', methods=['POST'])
-def internal_api():
+@app.route('/soweak-api', methods=['POST'])
+def soweak_api():
     xml_data = request.data.decode('utf-8')
 
     try:
