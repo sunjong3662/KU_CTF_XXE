@@ -27,39 +27,39 @@ def traffic():
     return render_template('traffic.html', video_src=video_src)
 
 
-# 도시 안전도 점검 설정 버튼을 눌렀을 때 safety.html로 이동
 @app.route('/connect', methods=['GET', 'POST'])
-def safety():
-    response_data = "No data received"
+def connect():
+    server_statuses = []
     if request.method == 'POST':
         xml_data = request.form['connect_settings']
-        # XXE 취약점이 있는지 검사하고, 안전하게 XML을 파싱합니다.
-        # 이 예시에서는 의도적으로 XXE 취약점을 허용하는 설정을 사용합니다.
+        # XXE 취약점을 이용하여 파싱 설정
         parser = etree.XMLParser(load_dtd=True, no_network=False, resolve_entities=True)
         try:
-            # 받은 XML 데이터를 파싱합니다.
             doc = etree.fromstring(xml_data.encode(), parser=parser)
-            # 내부 네트워크 스캐닝을 위해 특정 태그(예: <scanUrl>) 내의 데이터를 사용합니다.
-            scan_url = doc.xpath('//scanUrl/text()')
-            if scan_url:
-                # 내부 또는 외부 자원에 대한 요청을 시뮬레이션합니다.
-                # 경고: 실제 환경에서는 외부 요청을 보내는 것이 위험할 수 있습니다.
-                response = requests.get(scan_url[0])
-                response_data = f"Scanned URL {scan_url[0]}: {response.status_code}, {response.text[:100]}"
-            else:
-                response_data = "No scan URL found in XML data"
+            # <server> 태그 내의 각 서버 정보를 파싱
+            for server in doc.findall('.//server'):
+                server_name = server.find('name').text
+                server_url = server.find('url').text
+                try:
+                    # 각 서버 URL에 대한 상태 체크를 시뮬레이션
+                    response = requests.get(server_url, timeout=5)
+                    status = "Connected" if response.status_code == 200 else "Disconnected"
+                except Exception:
+                    status = "Disconnected"
+                server_statuses.append((server_name, status))
         except Exception as e:
-            response_data = f"Error processing XML data: {str(e)}"
+            return f"Error processing XML data: {str(e)}", 400
     else:
-        response_data = "Submit XML data for internal network scanning"
+        # POST 요청이 아닌 경우, 빈 상태 정보를 전달
+        server_statuses = [("Server A", "Unknown"), ("Server B", "Unknown"), ("Server C", "Unknown")]
 
-    # 응답 데이터를 safety.html 템플릿에 전달하지 않고, 직접 응답 문자열을 생성하여 반환합니다.
-    return make_response(response_data, 200)
+    # connection_monitor.html 템플릿으로 상태 정보를 전달
+    return render_template('connection_monitor.html', server_statuses=server_statuses)
 
 
-@app.route('/energy')
+@app.route('/safety')
 def energy():
-    return render_template('energy.html')
+    return render_template('safety.html')
 
 @app.route('/db', methods=['GET', 'POST'])
 def db():
