@@ -126,14 +126,14 @@
         </div>
         
         <div class="video-container">
-            <iframe src="path_to_your_mock_cctv_feed" title="CCTV 영상"></iframe>
+            <iframe src="" title="CCTV 영상"></iframe>
         </div>
 
         <!-- 도로 혼잡도 및 기타 정보 -->
         <div class="status-container">
             <div class="status-item">
                 <h2>도로 혼잡도</h2>
-                <p>철산대교사거리: 원활</p>(사실 여기를 동적으로 바꿔야해.)
+                <p>철산대교: 원활</p>
                 
                 <!-- 추가 도로 상태 정보 -->
             </div>
@@ -153,38 +153,37 @@
     </div>
     
     <script>
-        document.getElementById('roadInfoForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // 폼 제출 기본 동작 방지
-            var roadName = document.getElementById('roadName').value; // 입력된 도로 이름 가져오기
-        
-            // 도로 이름을 XML 형식으로 변환
-            var xmlData = `<roadName>${roadName}</roadName>`;
-        
-            // AJAX 요청 준비
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/get_video_by_road_xml", true);
-            xhr.setRequestHeader("Content-Type", "text/xml");
-        
-            // 요청 완료 처리
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    // 서버로부터 받은 XML 응답을 파싱
-                    var parser = new DOMParser();
-                    var xmlDoc = parser.parseFromString(xhr.responseText,"text/xml");
-                    var videoSrc = xmlDoc.getElementsByTagName("videoSrc")[0].childNodes[0].nodeValue;
-        
-                    // 비디오 경로로 비디오 업데이트
-                    var videoContainer = document.querySelector('.video-container');
-                    videoContainer.innerHTML = `<iframe src="${videoSrc}" title="도로 관련 영상"></iframe>`;
-                } else {
-                    console.error('Failed to load video.');
-                }
-            };
-        
-            // XML 데이터 전송
-            xhr.send(xmlData);
-        });
+      document.getElementById('trafficForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // 폼 제출 기본 동작 방지
+    var roadName = document.getElementById('xml_data').value; // 입력된 도로 이름 가져오기
 
+    // 도로 이름을 XML 형식으로 변환
+    var xmlData = `<roadName>${roadName}</roadName>`;
+
+    // AJAX 요청 준비
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/get_video_by_road_xml", true);
+    xhr.setRequestHeader("Content-Type", "text/xml");
+
+    // 요청 완료 처리
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            // 서버로부터 받은 XML 응답을 파싱
+            var parser = new DOMParser();
+            var xmlDoc = parser.parseFromString(xhr.responseText,"text/xml");
+            var videoSrc = xmlDoc.getElementsByTagName("videoSrc")[0].childNodes[0].nodeValue;
+
+            // 비디오 경로로 비디오 업데이트
+            var videoContainer = document.querySelector('.video-container iframe');
+            videoContainer.src = videoSrc; // iframe의 src 속성 업데이트
+        } else {
+            console.error('Failed to load video.');
+        }
+    };
+
+    // XML 데이터 전송
+    xhr.send(xmlData);
+});
         function fetchCongestionInfo() {
         var xhr = new XMLHttpRequest();
             xhr.open("GET", "/get_congestion_info", true); // 서버에서 도로 혼잡도 정보를 제공하는 엔드포인트

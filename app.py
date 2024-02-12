@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template, redirect, url_for
+from flask import Flask, jsonify, make_response, request, render_template, redirect, url_for
 from lxml import etree
 import os
 import json
@@ -14,27 +14,14 @@ def index():
 
 
 congestion_data = {
-    "강남대로": "원활"
+    "철산대교": "원활"
 }
 
 # 도로 이름과 비디오 경로의 매핑
 road_video_mapping = {
-    "강남대로": "/static/videos/gangnamdaero.mp4",
+    "철산대교": "/static/videos/chulsandaegyo.mp4",
 }
 
-@app.route('/get_video_by_road_xml', methods=['POST'])
-def get_video_by_road_xml():
-    xml_data = request.data
-    root = etree.fromstring(xml_data)
-    
-    # XML에서 도로 이름 추출
-    road_name = root.text  # XML 구조가 <roadName>도로이름</roadName> 인 경우
-
-    video_src = road_video_mapping.get(road_name, "/static/videos/default.mp4")  # 기본 비디오 경로
-
-    # 비디오 경로를 XML 형식으로 응답
-    response_xml = f'<videoSrc>{video_src}</videoSrc>'
-    return make_response(response_xml, 200, {'Content-Type': 'text/xml'})
 
 
 @app.route('/update_congestion', methods=['POST'])
@@ -61,10 +48,17 @@ def get_video_by_road_xml():
 
     # 도로 이름과 비디오 경로의 매핑
     road_video_mapping = {
-        "용산 한강": "/static/videos/yongsan_hangang.mp4",
+        "용산 한강": "/static/videos/yongsanhangang.mp4",
+        "강남대치동": "/static/videos/gangnamdaechi.mp4",
+        "강남대로": "/static/videos/gangnamdaero.mp4",
+        "가양대교북쪽": "/static/videos/gayangdaegyonorth.mp4",
+        "가양IC": "/static/videos/gayangIC.mp4",
+        "화양사거리": "/static/videos/hwayangsagori.mp4",
+        "진암": "/static/videos/jinam.mp4",
+        "철산대교": "/static/videos/chulsandaegyo.mp4",
         # 다른 도로 이름과 비디오 경로 매핑 추가
     }
-    video_src = road_video_mapping.get(road_name, "/static/videos/default.mp4")  # 기본 비디오 경로
+    video_src = road_video_mapping.get(road_name, "/static/videos/chulsandaegyo.mp4")  # 기본 비디오 경로
 
     # 비디오 경로를 XML 형식으로 응답
     response_xml = f'<videoSrc>{video_src}</videoSrc>'
@@ -73,7 +67,7 @@ def get_video_by_road_xml():
 
 @app.route('/traffic', methods=['GET', 'POST'])
 def traffic():
-    video_src = "/static/videos/default.mp4"  # 기본 비디오 소스
+    video_src = "/static/videos/chulsandaegyo.mp4"  # 기본 비디오 소스
     congestion_info = {}  # 도로 혼잡도 정보를 담을 딕셔너리
     if request.method == 'POST':
         xml_data = request.form['xml_data']
