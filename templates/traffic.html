@@ -87,6 +87,21 @@
             margin-bottom: 10px;
             color: #333;
         }
+
+        @keyframes slideIn {
+        from {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .status-item {
+        animation: slideIn 0.5s ease-out;
+    }
         /* Additional styles */
     </style>
 </head>
@@ -94,7 +109,7 @@
     <div class="navbar">
         <a href="/">Home</a>
         <a href="/traffic">Traffic</a>
-        <a href="/connect">Connect</a>
+        <a href="/connect">Connection Monitor</a>
         <a href="/safety">Safety</a>
         <a href="/db">Database</a>
     </div>
@@ -102,6 +117,14 @@
         <h1 class="title">교통 상황 관리</h1>
         
         <!-- 모의 CCTV 영상 -->
+        <div class="xml-input-container">
+            <form id="trafficForm">
+                <label for="xml_data">XML Data:</label>
+                <textarea id="xml_data" name="xml_data" rows="4" cols="50"></textarea>
+                <button type="submit">비디오 로드</button>
+            </form>
+        </div>
+        
         <div class="video-container">
             <iframe src="path_to_your_mock_cctv_feed" title="CCTV 영상"></iframe>
         </div>
@@ -110,24 +133,19 @@
         <div class="status-container">
             <div class="status-item">
                 <h2>도로 혼잡도</h2>
-                <p>강남대로: 원활</p>
-                <p>강변북로: 혼잡</p>
+                <p>철산대교사거리: 원활</p>(사실 여기를 동적으로 바꿔야해.)
+                
                 <!-- 추가 도로 상태 정보 -->
             </div>
             <div class="status-item">
                 <h2>교통 상태 업데이트</h2>
-                <p>마지막 업데이트: 5분 전</p>
+                <p>마지막 업데이트: NULL 분 전</p>
                 <!-- 실시간 교통 데이터 업데이트 -->
             </div>
         </div>
 
         <!-- 추가 기능 버튼 및 링크 -->
-        <div class="button-container">
-            <!-- 버튼 스타일링은 위에 .button 클래스 참조 -->
-            <button type="button">신호등 제어</button>
-            <button type="button">CCTV 관리</button>
-            <!-- 기타 버튼 추가 -->
-        </div>
+    
     </div>
     <div class="traffic-controls">
         <button onclick="controlTrafficLights()">신호등 제어</button>
@@ -135,21 +153,72 @@
     </div>
     
     <script>
-    // 신호등 제어 버튼 클릭 시 호출될 함수
-    function controlTrafficLights() {
-        alert("error!");
-        // 여기에 신호등 제어 페이지로 이동하거나,
-        // 실제 제어 로직을 구현할 수 있습니다.
-        // 예: window.location.href = '/traffic-lights-control';
-    }
+        document.getElementById('roadInfoForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // 폼 제출 기본 동작 방지
+            var roadName = document.getElementById('roadName').value; // 입력된 도로 이름 가져오기
+        
+            // 도로 이름을 XML 형식으로 변환
+            var xmlData = `<roadName>${roadName}</roadName>`;
+        
+            // AJAX 요청 준비
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/get_video_by_road_xml", true);
+            xhr.setRequestHeader("Content-Type", "text/xml");
+        
+            // 요청 완료 처리
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    // 서버로부터 받은 XML 응답을 파싱
+                    var parser = new DOMParser();
+                    var xmlDoc = parser.parseFromString(xhr.responseText,"text/xml");
+                    var videoSrc = xmlDoc.getElementsByTagName("videoSrc")[0].childNodes[0].nodeValue;
+        
+                    // 비디오 경로로 비디오 업데이트
+                    var videoContainer = document.querySelector('.video-container');
+                    videoContainer.innerHTML = `<iframe src="${videoSrc}" title="도로 관련 영상"></iframe>`;
+                } else {
+                    console.error('Failed to load video.');
+                }
+            };
+        
+            // XML 데이터 전송
+            xhr.send(xmlData);
+        });
+
+        function fetchCongestionInfo() {
+        var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/get_congestion_info", true); // 서버에서 도로 혼잡도 정보를 제공하는 엔드포인트
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    updateCongestionInfo(response);
+                } else {
+                    console.error('Failed to fetch congestion info.');
+                }
+            };
+            xhr.send();
+        }
+
+        function updateCongestionInfo(congestionInfo) {
+            const statusContainer = document.querySelector('.status-container');
+            statusContainer.innerHTML = ''; // 기존 정보 초기화
+
+            Object.keys(congestionInfo).forEach(function(roadName, index) {
+                setTimeout(() => {
+                    const status = congestionInfo[roadName];
+                    const element = document.createElement('div');
+                    element.className = 'status-item';
+                    element.innerHTML = `<h2>${roadName}</h2><p>${status}</p>`;
+                    statusContainer.appendChild(element);
+                }, index * 4000); // 각 정보를 4초 간격으로 표시
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchCongestionInfo();
+            setInterval(fetchCongestionInfo, 4000 * Object.keys(congestionInfo).length); // 전체 리스트를 한 번 순회하는데 걸리는 시간 후 다시 시작
+        });
     
-    // 설정 버튼 클릭 시 호출될 함수
-    function configureSettings() {
-        alert("설정파일이 없음!");
-        // 여기에 설정 페이지로 이동하거나,
-        // 설정을 조정하는 로직을 구현할 수 있습니다.
-        // 예: window.location.href = '/settings';
-    }
     </script>
 </body>
 </html>

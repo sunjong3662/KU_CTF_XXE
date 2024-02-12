@@ -1,6 +1,7 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, jsonify, request, render_template, redirect, url_for
 from lxml import etree
 import os
+import json
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -11,20 +12,91 @@ SAFETY_CONFIG_FILE = 'safety_config.xml'
 def index():
     return render_template('index.html')
 
+
+congestion_data = {
+    "강남대로": "원활"
+}
+
+# 도로 이름과 비디오 경로의 매핑
+road_video_mapping = {
+    "강남대로": "/static/videos/gangnamdaero.mp4",
+}
+
+@app.route('/get_video_by_road_xml', methods=['POST'])
+def get_video_by_road_xml():
+    xml_data = request.data
+    root = etree.fromstring(xml_data)
+    
+    # XML에서 도로 이름 추출
+    road_name = root.text  # XML 구조가 <roadName>도로이름</roadName> 인 경우
+
+    video_src = road_video_mapping.get(road_name, "/static/videos/default.mp4")  # 기본 비디오 경로
+
+    # 비디오 경로를 XML 형식으로 응답
+    response_xml = f'<videoSrc>{video_src}</videoSrc>'
+    return make_response(response_xml, 200, {'Content-Type': 'text/xml'})
+
+
+@app.route('/update_congestion', methods=['POST'])
+def update_congestion():
+    road_name = request.form['road_name']
+    status = request.form['status']
+    
+    # 도로 혼잡도 정보 업데이트
+    if road_name in congestion_data:
+        congestion_data[road_name] = status
+        return jsonify({"success": True, "message": "도로 혼잡도 정보가 업데이트 되었습니다."})
+    else:
+        return jsonify({"success": False, "message": "해당 도로 정보를 찾을 수 없습니다."})
+
+
+
+@app.route('/get_video_by_road_xml', methods=['POST'])
+def get_video_by_road_xml():
+    xml_data = request.data
+    root = etree.fromstring(xml_data)
+    
+    # XML에서 도로 이름 추출
+    road_name = root.text
+
+    # 도로 이름과 비디오 경로의 매핑
+    road_video_mapping = {
+        "용산 한강": "/static/videos/yongsan_hangang.mp4",
+        # 다른 도로 이름과 비디오 경로 매핑 추가
+    }
+    video_src = road_video_mapping.get(road_name, "/static/videos/default.mp4")  # 기본 비디오 경로
+
+    # 비디오 경로를 XML 형식으로 응답
+    response_xml = f'<videoSrc>{video_src}</videoSrc>'
+    return make_response(response_xml, 200, {'Content-Type': 'text/xml'})
+
+
 @app.route('/traffic', methods=['GET', 'POST'])
 def traffic():
     video_src = "/static/videos/default.mp4"  # 기본 비디오 소스
+    congestion_info = {}  # 도로 혼잡도 정보를 담을 딕셔너리
     if request.method == 'POST':
         xml_data = request.form['xml_data']
         try:
-            # XXE 취약점을 트리거할 수 있는 파서 설정
             parser = etree.XMLParser(load_dtd=True, no_network=False, resolve_entities=True)
             doc = etree.fromstring(xml_data.encode(), parser=parser)
-            # 입력받은 위치에 해당하는 영상 URL 추출
+            
+            # 비디오 경로 추출
             video_src = doc.find('.//video').text
+
+            # 도로 혼잡도 정보 추출
+            for road in doc.findall('.//road'):
+                road_name = road.find('name').text
+                road_status = road.find('status').text
+                congestion_info[road_name] = road_status
         except Exception as e:
             print(f"Error: {e}")
-    return render_template('traffic.html', video_src=video_src)
+
+    # 비디오 경로와 도로 혼잡도 정보를 템플릿에 전달
+    return render_template('traffic.html', video_src=video_src, congestion_info=congestion_info)
+
+
+
 
 
 @app.route('/connect', methods=['GET', 'POST'])
@@ -57,9 +129,22 @@ def connect():
     return render_template('connection_monitor.html', server_statuses=server_statuses)
 
 
+
+
+
+
+
+
+
+
 @app.route('/safety')
 def energy():
     return render_template('safety.html')
+
+
+
+
+
 
 @app.route('/db', methods=['GET', 'POST'])
 def db():
