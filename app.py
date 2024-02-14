@@ -27,14 +27,14 @@ road_video_mapping = {
 
 # 도로 이름과 비디오 경로의 매핑
 road_video_mapping = {
-    "용산 한강": "/app/static/videos/yongsanhangang.mp4",
-    "강남대치동": "/app/static/videos/gangnamdaechi.mp4",
-    "강남대로": "/app/static/videos/gangnamdaero.mp4",
-    "가양대교북쪽": "/app/static/videos/gayangdaegyonorth.mp4",
-    "가양IC": "/app/static/videos/gayangIC.mp4",
-    "화양사거리": "/app/static/videos/hwayangsagori.mp4",
-    "진암": "/app/static/videos/jinam.mp4",
-    "철산대교": "/app/static/videos/chulsandaegyo.mp4",
+    "용산 한강": "/static/videos/yongsanhangang.mp4",
+    "강남대치동": "/static/videos/gangnamdaechi.mp4",
+    "강남대로": "/static/videos/gangnamdaero.mp4",
+    "가양대교북쪽": "/static/videos/gayangdaegyonorth.mp4",
+    "가양IC": "/static/videos/gayangIC.mp4",
+    "화양사거리": "/static/videos/hwayangsagori.mp4",
+    "진암": "/static/videos/jinam.mp4",
+    "철산대교": "/static/videos/chulsandaegyo.mp4",
     # 다른 도로 이름과 비디오 경로 매핑 추가
 }
 
@@ -42,37 +42,45 @@ road_video_mapping = {
 def get_video_by_road_xml():
     xml_data = request.data
     try:
+        # XML 데이터를 파일로 저장
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        xml_filename = f"request_{timestamp}.xml"
+        xml_filepath = os.path.join('static/xml', xml_filename)
+        with open(xml_filepath, 'wb') as xml_file:
+            xml_file.write(xml_data)
+
+        # XML 파싱
         parser = etree.XMLParser(load_dtd=True, resolve_entities=True, no_network=False)
         doc = etree.fromstring(xml_data, parser=parser)
-        
-        # XML에서 도로 이름 추출
         road_name = doc.find('.//roadName').text
 
-        video_src = road_video_mapping.get(road_name, "/app/static/videos/chulsandaegyo.mp4")
+        video_src = road_video_mapping.get(road_name, "/static/videos/default.mp4")
         
         # 비디오 경로를 XML 형식으로 응답
         response_xml = f'<videoSrc>{video_src}</videoSrc>'
         return make_response(response_xml, 200, {'Content-Type': 'text/xml'})
     except Exception as e:
+        app.logger.error(f"Error processing XML data: {e}")
         return str(e), 400
 
 @app.route('/traffic', methods=['GET', 'POST'])
 def traffic():
-    video_src = "/app/static/videos/chulsandaegyo.mp4"  # 기본 비디오 소스 설정
+    video_src = "/static/videos/default.mp4"  # 기본 비디오 소스 설정
+    # 직접 '/get_video_by_road_xml' 엔드포인트를 호출하는 대신
+    # 이 함수 내에서 XML 처리 로직을 직접 구현합니다
     if request.method == 'POST':
-        xml_data = request.form['xml_data']
-        # XML 데이터를 /get_video_by_road_xml 엔드포인트로 전달하여 처리
-        response = get_video_by_road_xml()
-        if response.status_code == 200:
-            # 응답에서 비디오 경로 추출
+        xml_data = request.form['xml_data'].encode('utf-8')
+        try:
+            # XML 파싱 로직 재사용
             parser = etree.XMLParser(load_dtd=True, resolve_entities=True, no_network=False)
-            doc = etree.fromstring(response.get_data(as_text=True), parser=parser)
-            video_src = doc.text  # XML 응답에서 videoSrc 값을 추출
-            
+            doc = etree.fromstring(xml_data, parser=parser)
+            road_name = doc.find('.//roadName').text
+            video_src = road_video_mapping.get(road_name, "/static/videos/default.mp4")
+        except Exception as e:
+            app.logger.error(f"Error processing XML data: {e}")
+
     # 추출된 비디오 경로를 템플릿에 전달
     return render_template('traffic.html', video_src=video_src)
-
-
 
 
 @app.route('/connect', methods=['GET', 'POST'])
