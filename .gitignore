@@ -48,3 +48,5 @@ virtualenv/
 
 # 백업 파일
 *.bak
+
+/static/videos/*
