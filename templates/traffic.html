@@ -153,71 +153,57 @@
     </div>
     
     <script>
-      document.getElementById('trafficForm').addEventListener('submit', function(e) {
-    e.preventDefault(); // 폼 제출 기본 동작 방지
-    var roadName = document.getElementById('xml_data').value; // 입력된 도로 이름 가져오기
-
-    // 도로 이름을 XML 형식으로 변환
-    var xmlData = `<roadName>${roadName}</roadName>`;
-
-    // AJAX 요청 준비
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "/get_video_by_road_xml", true);
-    xhr.setRequestHeader("Content-Type", "text/xml");
-
-    // 요청 완료 처리
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            // 서버로부터 받은 XML 응답을 파싱
-            var parser = new DOMParser();
-            var xmlDoc = parser.parseFromString(xhr.responseText,"text/xml");
-            var videoSrc = xmlDoc.getElementsByTagName("videoSrc")[0].childNodes[0].nodeValue;
-
-            // 비디오 경로로 비디오 업데이트
-            var videoContainer = document.querySelector('.video-container iframe');
-            videoContainer.src = videoSrc; // iframe의 src 속성 업데이트
-        } else {
-            console.error('Failed to load video.');
-        }
-    };
-
-    // XML 데이터 전송
-    xhr.send(xmlData);
-});
-        function fetchCongestionInfo() {
-        var xhr = new XMLHttpRequest();
-            xhr.open("GET", "/get_congestion_info", true); // 서버에서 도로 혼잡도 정보를 제공하는 엔드포인트
+        document.getElementById('trafficForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // 폼 제출 기본 동작 방지
+            var xmlDataInput = document.getElementById('xml_data').value; // 입력된 XML 데이터 가져오기
+        
+            // AJAX 요청 준비
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/get_video_by_road_xml", true);
+            xhr.setRequestHeader("Content-Type", "text/xml");
+        
+            // 요청 완료 처리
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    const response = JSON.parse(xhr.responseText);
-                    updateCongestionInfo(response);
+                    // 서버로부터 받은 XML 응답을 파싱
+                    var parser = new DOMParser();
+                    var xmlDoc = parser.parseFromString(xhr.responseText, "text/xml");
+                    var videoSrc = xmlDoc.getElementsByTagName("videoSrc")[0].childNodes[0].nodeValue;
+        
+                    // 비디오 경로로 비디오 업데이트
+                    var videoContainer = document.querySelector('.video-container iframe');
+                    videoContainer.src = videoSrc; // iframe의 src 속성 업데이트
                 } else {
-                    console.error('Failed to fetch congestion info.');
+                    console.error('Failed to load video.');
                 }
             };
-            xhr.send();
-        }
-
-        function updateCongestionInfo(congestionInfo) {
-            const statusContainer = document.querySelector('.status-container');
-            statusContainer.innerHTML = ''; // 기존 정보 초기화
-
-            Object.keys(congestionInfo).forEach(function(roadName, index) {
-                setTimeout(() => {
-                    const status = congestionInfo[roadName];
-                    const element = document.createElement('div');
-                    element.className = 'status-item';
-                    element.innerHTML = `<h2>${roadName}</h2><p>${status}</p>`;
-                    statusContainer.appendChild(element);
-                }, index * 4000); // 각 정보를 4초 간격으로 표시
+        
+            // XML 데이터 전송
+            xhr.send(xmlDataInput);
+        });
+        
+        function updateCongestionStatus() {
+            fetch('/app/static/json/congestion.json')
+            .then(response => response.json())
+            .then(data => {
+                let roads = Object.keys(data);
+                let roadIndex = (Math.floor(Date.now() / 4000) % roads.length);
+                let roadName = roads[roadIndex];
+                let roadStatus = data[roadName];
+        
+                let statusContainer = document.querySelector('.status-container');
+                statusContainer.innerHTML = `<div class="status-item"><h2>${roadName}</h2><p>${roadStatus}</p></div>`;
+            })
+            .catch(error => {
+                console.error('Error fetching congestion data:', error);
             });
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchCongestionInfo();
-            setInterval(fetchCongestionInfo, 4000 * Object.keys(congestionInfo).length); // 전체 리스트를 한 번 순회하는데 걸리는 시간 후 다시 시작
-        });
-    
-    </script>
+        
+        // 4초마다 도로 혼잡도 정보 업데이트
+        setInterval(updateCongestionStatus, 4000);
+        
+        // 페이지 로드 시 초기 혼잡도 정보 업데이트
+        document.addEventListener('DOMContentLoaded', updateCongestionStatus);
+        </script>
 </body>
 </html>

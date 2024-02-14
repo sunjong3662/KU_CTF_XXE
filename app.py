@@ -24,71 +24,53 @@ road_video_mapping = {
 
 
 
-@app.route('/update_congestion', methods=['POST'])
-def update_congestion():
-    road_name = request.form['road_name']
-    status = request.form['status']
-    
-    # 도로 혼잡도 정보 업데이트
-    if road_name in congestion_data:
-        congestion_data[road_name] = status
-        return jsonify({"success": True, "message": "도로 혼잡도 정보가 업데이트 되었습니다."})
-    else:
-        return jsonify({"success": False, "message": "해당 도로 정보를 찾을 수 없습니다."})
 
-
+# 도로 이름과 비디오 경로의 매핑
+road_video_mapping = {
+    "용산 한강": "/app/static/videos/yongsanhangang.mp4",
+    "강남대치동": "/app/static/videos/gangnamdaechi.mp4",
+    "강남대로": "/app/static/videos/gangnamdaero.mp4",
+    "가양대교북쪽": "/app/static/videos/gayangdaegyonorth.mp4",
+    "가양IC": "/app/static/videos/gayangIC.mp4",
+    "화양사거리": "/app/static/videos/hwayangsagori.mp4",
+    "진암": "/app/static/videos/jinam.mp4",
+    "철산대교": "/app/static/videos/chulsandaegyo.mp4",
+    # 다른 도로 이름과 비디오 경로 매핑 추가
+}
 
 @app.route('/get_video_by_road_xml', methods=['POST'])
 def get_video_by_road_xml():
     xml_data = request.data
-    root = etree.fromstring(xml_data)
-    
-    # XML에서 도로 이름 추출
-    road_name = root.text
+    try:
+        parser = etree.XMLParser(load_dtd=True, resolve_entities=True, no_network=False)
+        doc = etree.fromstring(xml_data, parser=parser)
+        
+        # XML에서 도로 이름 추출
+        road_name = doc.find('.//roadName').text
 
-    # 도로 이름과 비디오 경로의 매핑
-    road_video_mapping = {
-        "용산 한강": "/static/videos/yongsanhangang.mp4",
-        "강남대치동": "/static/videos/gangnamdaechi.mp4",
-        "강남대로": "/static/videos/gangnamdaero.mp4",
-        "가양대교북쪽": "/static/videos/gayangdaegyonorth.mp4",
-        "가양IC": "/static/videos/gayangIC.mp4",
-        "화양사거리": "/static/videos/hwayangsagori.mp4",
-        "진암": "/static/videos/jinam.mp4",
-        "철산대교": "/static/videos/chulsandaegyo.mp4",
-        # 다른 도로 이름과 비디오 경로 매핑 추가
-    }
-    video_src = road_video_mapping.get(road_name, "/static/videos/chulsandaegyo.mp4")  # 기본 비디오 경로
-
-    # 비디오 경로를 XML 형식으로 응답
-    response_xml = f'<videoSrc>{video_src}</videoSrc>'
-    return make_response(response_xml, 200, {'Content-Type': 'text/xml'})
-
+        video_src = road_video_mapping.get(road_name, "/app/static/videos/chulsandaegyo.mp4")
+        
+        # 비디오 경로를 XML 형식으로 응답
+        response_xml = f'<videoSrc>{video_src}</videoSrc>'
+        return make_response(response_xml, 200, {'Content-Type': 'text/xml'})
+    except Exception as e:
+        return str(e), 400
 
 @app.route('/traffic', methods=['GET', 'POST'])
 def traffic():
-    video_src = "/static/videos/chulsandaegyo.mp4"  # 기본 비디오 소스
-    congestion_info = {}  # 도로 혼잡도 정보를 담을 딕셔너리
+    video_src = "/app/static/videos/chulsandaegyo.mp4"  # 기본 비디오 소스 설정
     if request.method == 'POST':
         xml_data = request.form['xml_data']
-        try:
-            parser = etree.XMLParser(load_dtd=True, no_network=False, resolve_entities=True)
-            doc = etree.fromstring(xml_data.encode(), parser=parser)
+        # XML 데이터를 /get_video_by_road_xml 엔드포인트로 전달하여 처리
+        response = get_video_by_road_xml()
+        if response.status_code == 200:
+            # 응답에서 비디오 경로 추출
+            parser = etree.XMLParser(load_dtd=True, resolve_entities=True, no_network=False)
+            doc = etree.fromstring(response.get_data(as_text=True), parser=parser)
+            video_src = doc.text  # XML 응답에서 videoSrc 값을 추출
             
-            # 비디오 경로 추출
-            video_src = doc.find('.//video').text
-
-            # 도로 혼잡도 정보 추출
-            for road in doc.findall('.//road'):
-                road_name = road.find('name').text
-                road_status = road.find('status').text
-                congestion_info[road_name] = road_status
-        except Exception as e:
-            print(f"Error: {e}")
-
-    # 비디오 경로와 도로 혼잡도 정보를 템플릿에 전달
-    return render_template('traffic.html', video_src=video_src, congestion_info=congestion_info)
-
+    # 추출된 비디오 경로를 템플릿에 전달
+    return render_template('traffic.html', video_src=video_src)
 
 
 
