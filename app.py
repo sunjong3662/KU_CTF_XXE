@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, make_response, request, render_template, redirect, url_for
 from lxml import etree
+from datetime import datetime
 import os
 import json
 
@@ -42,32 +43,24 @@ road_video_mapping = {
 def get_video_by_road_xml():
     xml_data = request.data
     try:
-        # XML 데이터를 파일로 저장
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        xml_filename = f"request_{timestamp}.xml"
-        xml_filepath = os.path.join('static/xml', xml_filename)
-        with open(xml_filepath, 'wb') as xml_file:
-            xml_file.write(xml_data)
-
         # XML 파싱
         parser = etree.XMLParser(load_dtd=True, resolve_entities=True, no_network=False)
         doc = etree.fromstring(xml_data, parser=parser)
         road_name = doc.find('.//roadName').text
 
-        video_src = road_video_mapping.get(road_name, "/static/videos/default.mp4")
+        video_src = road_video_mapping.get(road_name, "/static/videos/chulsandaegyo.mp4")
         
         # 비디오 경로를 XML 형식으로 응답
         response_xml = f'<videoSrc>{video_src}</videoSrc>'
         return make_response(response_xml, 200, {'Content-Type': 'text/xml'})
     except Exception as e:
         app.logger.error(f"Error processing XML data: {e}")
-        return str(e), 400
+        return "Error processing XML data", 400
+
 
 @app.route('/traffic', methods=['GET', 'POST'])
 def traffic():
-    video_src = "/static/videos/default.mp4"  # 기본 비디오 소스 설정
-    # 직접 '/get_video_by_road_xml' 엔드포인트를 호출하는 대신
-    # 이 함수 내에서 XML 처리 로직을 직접 구현합니다
+    video_src = "/static/videos/chulsandaegyo.mp4"  # 기본 비디오 소스 설정
     if request.method == 'POST':
         xml_data = request.form['xml_data'].encode('utf-8')
         try:
@@ -75,7 +68,7 @@ def traffic():
             parser = etree.XMLParser(load_dtd=True, resolve_entities=True, no_network=False)
             doc = etree.fromstring(xml_data, parser=parser)
             road_name = doc.find('.//roadName').text
-            video_src = road_video_mapping.get(road_name, "/static/videos/default.mp4")
+            video_src = road_video_mapping.get(road_name, "/static/videos/chulsandaegyo.mp4")
         except Exception as e:
             app.logger.error(f"Error processing XML data: {e}")
 
