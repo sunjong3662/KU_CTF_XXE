@@ -85,17 +85,15 @@ def connect():
         parsingxml_status = "disconnected"
 
     try:
-        # /filereader/status 서버 상태 확인
-        # "filereader" 엔드포인트의 정확한 URL로 변경해야 합니다 (예: http://192.168.0.100/filereader/status)
-        fileleader_response = requests.get('http://127.0.0.1/filereader/status', timeout=5)
+        filereader_response = requests.get('http://127.0.0.1/filereader/status', timeout=5)
         # JSON 응답에서 "status" 키의 값이 "Service is up"인지 확인
-        fileleader_status = "connected" if fileleader_response.json().get('status') == "Service is up" else "disconnected"
+        filereader_status = "connected" if filereader_response.json().get('status') == "Service is up" else "disconnected"
     except Exception:
-        fileleader_status = "disconnected"
+        filereader_status = "disconnected"
 
     server_statuses = [
         ("parsingxml", parsingxml_status),
-        ("fileleader", fileleader_status),
+        ("fileleader", filereader_status),
         ("숨겨진 네트워크", "unknown")
     ]
     # connection_monitor.html 템플릿으로 상태 정보를 전달
