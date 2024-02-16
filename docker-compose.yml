@@ -12,10 +12,10 @@ services:
       - FLASK_APP=app.py
     command: flask run --host=0.0.0.0 --port=5000
 
-  so-weak-api:
+  filereader:
     build: .
     ports:
-      - "8000:8000"  # 내부 API 서비스 포트 (테스트 목적으로 외부에 노출)
+      - "7000:7000"  # 내부 API 서비스 포트 
     environment:
-      - FLASK_APP=so_weak_api.py
-    command: flask run --host=0.0.0.0 --port=8000
+      - FLASK_APP=filereader.py
+    command: flask run --host=127.0.0.1 --port=7000

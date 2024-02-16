@@ -39,8 +39,8 @@
         .traffic-controls button {
             padding: 10px 15px;
             margin: 5px;
-            background-color: #4CAF50; /* 녹색 배경 */
-            color: white; /* 흰색 텍스트 */
+            background-color: #4CAF50;
+            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -66,7 +66,7 @@
         }
         .video-container iframe {
             width: 100%;
-            height: 400px; /* Adjust height as needed */
+            height: 400px; 
             border: none;
             border-radius: 10px;
         }
@@ -102,7 +102,28 @@
     .status-item {
         animation: slideIn 0.5s ease-out;
     }
-        /* Additional styles */
+
+    .button-container button {
+            background-color: #4CAF50; 
+            color: white; 
+            padding: 10px 20px; 
+            margin: 8px 0; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            transition: all 0.3s ease 0s; 
+        }
+
+        .button-container button:hover {
+            background-color: #45a049; 
+        }
+
+
+        .button-container button.active {
+            background-color: #2e8b57; 
+            color: yellow; 
+        }
+
     </style>
 </head>
 <body>
@@ -117,12 +138,15 @@
         <h1 class="title">교통 상황 관리</h1>
         
         <!-- 모의 CCTV 영상 -->
-        <div class="xml-input-container">
-            <form id="trafficForm">
-                <label for="xml_data">XML Data:</label>
-                <textarea id="xml_data" name="xml_data" rows="1" cols="6"></textarea>
-                <button type="submit">비디오 로드</button>
-            </form>
+        <div class="button-container">
+            <button onclick="submitVideoRequest('용산한강')">용산한강</button>
+            <button onclick="submitVideoRequest('강남대치동')">강남대치동</button>
+            <button onclick="submitVideoRequest('강남대로')">강남대로</button>
+            <button onclick="submitVideoRequest('가양대교북쪽')">가양대교 북쪽</button>
+            <button onclick="submitVideoRequest('가양IC')">가양IC</button>
+            <button onclick="submitVideoRequest('화양사거리')">화양사거리</button>
+            <button onclick="submitVideoRequest('진암')">진암</button>
+            <button onclick="submitVideoRequest('철산대교')">철산대교</button>
         </div>
         
         <div class="video-container">
@@ -146,52 +170,43 @@
         <!-- 추가 기능 버튼 및 링크 -->
     
     </div>
-    <div class="traffic-controls">
-        <button onclick="controlTrafficLights()">신호등 제어</button>
-        <button onclick="configureSettings()">설정</button>
-    </div>
+
     
     <script>
-       // 페이지 로드 완료 시 "철산대교"에 대한 비디오 로드 실행
-        document.addEventListener('DOMContentLoaded', function() {
-            submitVideoRequest("철산대교");
-        });
-
-    document.getElementById('trafficForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // 폼 제출 기본 동작 방지
-
-        var roadName = document.getElementById('xml_data').value; // 입력된 도로 이름 가져오기
-        submitVideoRequest(roadName); // 사용자가 입력한 도로 이름으로 비디오 요청 실행
-    });
-
-    function submitVideoRequest(roadName) {
-        var xmlDataInput = `<request><roadName>${roadName}</roadName></request>`; // XML 데이터 형식으로 변환
-
-    // AJAX 요청 준비
+          function submitVideoRequest(roadId) {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "/get_video_by_road_xml", true);
-    xhr.setRequestHeader("Content-Type", "text/xml");
+    xhr.open("POST", "/parsingxml", true);
+    xhr.setRequestHeader("Content-Type", "application/xml"); // XML 형식으로 전송
 
-    // 요청 완료 처리
+    // XML 데이터 생성
+    var xmlData = `<?xml version="1.0" encoding="UTF-8"?>
+                        <request>
+                            <roadId>${roadId}</roadId>
+                        </request>`;
+
+    
     xhr.onload = function () {
-        if (xhr.status === 200) {
-            // 서버로부터 받은 XML 응답을 파싱
-            var parser = new DOMParser();
-            var xmlDoc = parser.parseFromString(xhr.responseText, "text/xml");
-            var videoSrc = xmlDoc.getElementsByTagName("videoSrc")[0].textContent;
-
+    if (xhr.status === 200) {
+        // 서버로부터 받은 XML 응답을 파싱
+        var parser = new DOMParser();
+        var xmlDoc = parser.parseFromString(xhr.responseText, "application/xml");
+        var videoSrcElement = xmlDoc.getElementsByTagName("videoSrc")[0];
+        
+        if (videoSrcElement && videoSrcElement.textContent) {
             // 비디오 경로로 비디오 업데이트
-            var videoContainer = document.querySelector('.video-container iframe');
-            videoContainer.src = videoSrc; // iframe의 src 속성 업데이트
+            document.querySelector('.video-container iframe').src = videoSrcElement.textContent;
         } else {
-            console.error('Failed to load video.');
+            // videoSrcElement가 없거나 비어있는 경우 오류 처리
+            console.error('No video source available.');
         }
-    };
+    } else {
+        // 서버 응답이 200이 아닌 경우 오류 처리
+        console.error('Failed to load video. Status:', xhr.status);
+    }
+};
 
-    // XML 데이터 전송
-    xhr.send(xmlDataInput);
+    xhr.send(xmlData); // XML 데이터를 서버에 전송
 }
-
 
     let roadsData = []; // 도로 정보를 저장할 배열
     let currentRoadIndex = 0; // 현재 표시중인 도로 정보의 인덱스
@@ -216,7 +231,7 @@
 
         // 도로 혼잡도 정보를 페이지에 표시
         let statusParagraph = document.querySelector('.congestion-status');
-        statusParagraph.innerText = `${roadName}: ${roadStatus}`; // <p> 내용 업데이트
+        statusParagraph.innerText = `${roadName}: ${roadStatus}`;
         
         // 다음 도로 정보로 인덱스 업데이트
         currentRoadIndex = (currentRoadIndex + 1) % roadsData.length;

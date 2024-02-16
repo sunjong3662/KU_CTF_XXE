@@ -107,11 +107,11 @@
         <div class="dashboard">
             <div class="dashboard-item">
                 <h2>Total Records</h2>
-                <p>1,234,567</p>
+                <p>2,147,483,647</p>
             </div>
             <div class="dashboard-item">
                 <h2>Queries Per Second</h2>
-                <p>12Queries/</p>
+                <p>12Queries/S</p>
             </div>
             <div class="dashboard-item">
                 <h2>Server Uptime</h2>
@@ -122,18 +122,8 @@
             </div>
         </div>
 
-        <!-- Button to toggle the XML configuration container -->
-        <button class="toggle-btn" onclick="toggleXMLConfig()">Toggle XML Configuration</button>
-
-        <!-- Sliding XML configuration container -->
-        <div class="xml-config-container" id="xmlConfigContainer">
-            <form method="post" action="/db">
-                <label for="xmlData">XML Configuration:</label>
-                <textarea id="xmlData" name="xml_data" rows="10" cols="50"></textarea>
-                <br>
-                <input type="submit" value="Update Configuration">
-            </form>
-        </div>
+   
+       
     </div>
 
     <script>
