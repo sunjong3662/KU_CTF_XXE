@@ -10,9 +10,8 @@ def filereader_status():
 
 @app.route('/filereader', methods=['POST'])
 def filereader():
-    # 예제에서는 단순히 파일의 내용을 반환하도록 설정합니다.
-    # 실제 FLAG 파일의 경로를 지정합니다.
-    flag_file_path = os.path.join(app.root_path, 'FLAG')
+
+    flag_file_path = os.path.join(app.root_path, 'myrealpc')
 
     try:
         # 파일을 읽고 내용을 반환합니다.
