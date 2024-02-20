@@ -1,11 +1,10 @@
-# Ubuntu 베이스 이미지를 사용합니다.
 FROM ubuntu:20.04
 
 # 환경 설정 및 Python 설치를 위한 필수 패키지 설치
 RUN apt-get update && \
     apt-get install -y python3-pip python3-dev && \
-    ln -s /usr/bin/python3 /usr/bin/python && \
-    ln -s /usr/bin/pip3 /usr/bin/pip && \
+    ln -sf /usr/bin/python3 /usr/bin/python && \
+    ln -sf /usr/bin/pip3 /usr/bin/pip && \
     rm -rf /var/lib/apt/lists/*
 
 # 작업 디렉토리를 설정합니다.
