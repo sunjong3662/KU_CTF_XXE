@@ -16,12 +16,11 @@ COPY requirements.txt .
 # 의존성을 설치합니다.
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 나머지 소스 코드와 gunicorn 설정 파일을 컨테이너에 복사합니다.
+# 나머지 소스 코드를 컨테이너에 복사합니다.
 COPY . .
-COPY gunicorn_config.py .
 
 # 5000번 포트를 외부로 노출합니다.
 EXPOSE 5000
 
-# Flask 앱을 gunicorn으로 실행합니다.
-CMD ["gunicorn", "--config", "gunicorn_config.py", "app:app"]
+# Flask 앱을 gunicorn으로 실행합니다. workers를 3으로 설정하고, 바인딩 주소를 0.0.0.0:5000으로 설정합니다.
+CMD ["gunicorn", "-w", "3", "-b", "0.0.0.0:5000", "app:app"]
