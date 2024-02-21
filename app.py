@@ -68,7 +68,6 @@ def parsingxml_status():
 
 @app.route('/traffic')
 def traffic():
-    # 여기서는 특별한 초기화 작업이 필요 없으며, 단순히 페이지를 렌더링합니다.
     return render_template('traffic.html')
 
 
@@ -77,16 +76,13 @@ def traffic():
 @app.route('/connect', methods=['GET', 'POST'])
 def connect():
     try:
-        # /parsingxml/status 엔드포인트 상태 확인
         parsingxml_response = requests.get('http://ctf.bulletproofyuri.kr:5000/parsingxml/status', timeout=5)
-        # JSON 응답에서 "status" 키의 값이 "Service is up"인지 확인
         parsingxml_status = "connected" if parsingxml_response.json().get('status') == "Service is up" else "disconnected"
     except Exception:
         parsingxml_status = "disconnected"
 
     try:
         filereader_response = requests.get('http://127.0.0.1/filereader/status', timeout=5)
-        # JSON 응답에서 "status" 키의 값이 "Service is up"인지 확인
         filereader_status = "connected" if filereader_response.json().get('status') == "Service is up" else "disconnected"
     except Exception:
         filereader_status = "disconnected"
@@ -96,7 +92,6 @@ def connect():
         ("fileleader", filereader_status),
         ("숨겨진 네트워크", "unknown")
     ]
-    # connection_monitor.html 템플릿으로 상태 정보를 전달
     return render_template('connection_monitor.html', server_statuses=server_statuses)
 
 
