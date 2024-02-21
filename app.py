@@ -88,8 +88,8 @@ def connect():
         filereader_status = "disconnected"
 
     server_statuses = [
-        ("parsingxml", parsingxml_status),
-        ("fileleader", filereader_status),
+        ("parsingxml:5000", parsingxml_status),
+        ("fileleader:7000?file=status", filereader_status),
         ("숨겨진 네트워크", "unknown")
     ]
     return render_template('connection_monitor.html', server_statuses=server_statuses)

@@ -3,14 +3,6 @@ __pycache__/
 *.pyc
 *.pyo
 
-# macOS
-.DS_Store
-
-# Node.js
-node_modules/
-npm-debug.log
-yarn-error.log
-
 # Visual Studio Code
 .vscode/
 
