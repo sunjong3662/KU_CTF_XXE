@@ -7,20 +7,24 @@ RUN apt-get update && \
     ln -sf /usr/bin/pip3 /usr/bin/pip && \
     rm -rf /var/lib/apt/lists/*
 
-# 작업 디렉토리를 설정합니다.
+# 작업 디렉토리 설정.
 WORKDIR /app
 
-# Flask 앱의 의존성 파일을 컨테이너에 복사합니다.
+# Flask 앱의 의존성 파일 적은거 안에 복사함.
 COPY requirements.txt .
 
-# 의존성을 설치합니다.
+# 복사한 저거 의존성 설치
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 나머지 소스 코드를 컨테이너에 복사합니다.
+
+RUN echo "KUCTF{XXE_1nj3ct1On_1S_3asY_F0r_us}" > /etc/myrealpc
+
+
+# 소스코드들 싸그리 싺싺 복사
 COPY . .
 
-# 5000번 포트를 외부로 노출합니다.
+# only 5000번이 나올 수 있음.
 EXPOSE 5000
 
-# Flask 앱을 gunicorn으로 실행합니다. workers를 3으로 설정하고, 바인딩 주소를 0.0.0.0:5000으로 설정합니다.
+# gunicorn이용해서 5000번에 바인딩해서 외부에서 접속할 수 있게 하는거임...
 CMD ["gunicorn", "-w", "3", "-b", "0.0.0.0:5000", "app:app"]
