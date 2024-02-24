@@ -76,13 +76,13 @@ def traffic():
 @app.route('/connect', methods=['GET', 'POST'])
 def connect():
     try:
-        parsingxml_response = requests.get('http://ctf.bulletproofyuri.kr/parsingxml/status', timeout=5)
+        parsingxml_response = requests.get('http://ctf.bulletproofyuri.kr:2024/parsingxml/status', timeout=10)
         parsingxml_status = "connected" if parsingxml_response.json().get('status') == "Service is up" else "disconnected"
     except Exception:
         parsingxml_status = "disconnected"
 
     try:
-        filereader_response = requests.get('http://127.0.0.1/filereader/status', timeout=5)
+        filereader_response = requests.get('http://127.0.0.1:7000/filereader/status', timeout=10)
         filereader_status = "connected" if filereader_response.json().get('status') == "Service is up" else "disconnected"
     except Exception:
         filereader_status = "disconnected"
