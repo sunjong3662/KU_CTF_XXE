@@ -38,28 +38,36 @@ road_video_mapping = {
     # 다른 도로 이름과 비디오 경로 매핑 추가
 }
 
+
+
 @app.route('/parsingxml', methods=['POST'])
 def parse_xml():
     xml_data = request.data
     try:
+        # XML 파서 설정: DTD 로드, 엔티티 해석 활성화
         parser = etree.XMLParser(load_dtd=True, no_network=False, resolve_entities=True)
         doc = etree.fromstring(xml_data, parser=parser)
+        
+        # roadId 값 추출
         road_id = doc.find('.//roadId').text
-
+        
+        # trafficData.xml 파일에서 해당 roadId에 맞는 videoPath와 congestion 값 추출
         xml_file_path = os.path.join(app.root_path, 'static', 'xml', 'trafficData.xml')
         with open(xml_file_path, 'rb') as xml_file:
             xml_content = xml_file.read()
             traffic_doc = etree.fromstring(xml_content)
-            video_path_element = traffic_doc.xpath(f"//road[@id='{road_id}']/videoPath")
-            if video_path_element:
-                video_src = video_path_element[0].text
-                response_xml = f'<videoSrc>{video_src}</videoSrc>'
+            road_element = traffic_doc.xpath(f"//road[@id='{road_id}']")
+            if road_element:
+                video_path = road_element[0].find('videoPath').text
+                congestion = road_element[0].find('congestion').text
+                response_xml = f'<response><videoSrc>{video_path}</videoSrc><congestion>{congestion}</congestion></response>'
                 return make_response(response_xml, 200, {'Content-Type': 'application/xml'})
             else:
-                return make_response('<error>Video path not found</error>', 404, {'Content-Type': 'application/xml'})
+                return make_response('<error>Information not found</error>', 404, {'Content-Type': 'application/xml'})
     except Exception as e:
         app.logger.error(f"Error processing XML data: {e}")
         return make_response(f'<error>Error processing XML data: {str(e)}</error>', 400, {'Content-Type': 'application/xml'})
+
 
 @app.route('/parsingxml/status', methods=['GET'])
 def parsingxml_status():
@@ -77,23 +85,24 @@ def traffic():
 def connect():
     try:
         parsingxml_response = requests.get('http://ctf.bulletproofyuri.kr:2024/parsingxml/status', timeout=10)
-        parsingxml_status = "connected" if parsingxml_response.json().get('status') == "Service is up" else "disconnected"
+        # 응답 문자열이 정확히 일치하는지 확인
+        parsingxml_status = "connected" if parsingxml_response.text == "{'status': 'Service is up'}" else "disconnected"
     except Exception:
         parsingxml_status = "disconnected"
 
     try:
         filereader_response = requests.get('http://127.0.0.1:7000/filereader/status', timeout=10)
-        filereader_status = "connected" if filereader_response.json().get('status') == "Service is up" else "disconnected"
+        # 응답 문자열이 정확히 일치하는지 확인
+        filereader_status = "connected" if filereader_response.text == "{'status': 'Service is up'}" else "disconnected"
     except Exception:
         filereader_status = "disconnected"
 
     server_statuses = [
         ("parsingxml:5000", parsingxml_status),
-        ("fileleader:7000?file=status", filereader_status),
+        ("filereader:7000?file=status", filereader_status),
         ("숨겨진 네트워크", "unknown")
     ]
     return render_template('connection_monitor.html', server_statuses=server_statuses)
-
 
 
 

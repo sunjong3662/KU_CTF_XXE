@@ -176,13 +176,14 @@
           function submitVideoRequest(roadId) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "/parsingxml", true);
-    xhr.setRequestHeader("Content-Type", "application/xml"); // XML 형식으로 전송
+    xhr.setRequestHeader("Content-Type", "application/xml");
 
-    // XML 데이터 생성
+    // Include a reference to the external DTD in the XML data
     var xmlData = `<?xml version="1.0" encoding="UTF-8"?>
-                        <request>
-                            <roadId>${roadId}</roadId>
-                        </request>`;
+                    <!DOCTYPE trafficData SYSTEM "trafficData.dtd">
+                    <request>
+                        <roadId>${roadId}</roadId>
+                    </request>`;
 
     
     xhr.onload = function () {

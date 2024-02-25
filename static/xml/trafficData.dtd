@@ -1,0 +1,5 @@
+<!ELEMENT trafficData (road*)>
+<!ELEMENT road (congestion, videoPath)>
+<!ATTLIST road id CDATA #REQUIRED>
+<!ELEMENT congestion (#PCDATA)>
+<!ELEMENT videoPath (#PCDATA)>
