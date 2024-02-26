@@ -84,7 +84,7 @@ def traffic():
 @app.route('/connect', methods=['GET', 'POST'])
 def connect():
     try:
-        parsingxml_response = requests.get('http://ctf.bulletproofyuri.kr:2024/parsingxml/status', timeout=10)
+        parsingxml_response = requests.get('http://localhost:5000/parsingxml/status', timeout=10)
         # 응답 문자열이 정확히 일치하는지 확인
         parsingxml_status = "connected" if parsingxml_response.text == "{'status': 'Service is up'}" else "disconnected"
     except Exception:
