@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=app.py
+    command: gunicorn --workers 3 --bind 0.0.0.0:5000 app:app
+
+  filereader:
+    build: .
+    ports:
+      - "7000:7000"
+    environment:
+      - FLASK_APP=filereader.py
+    command: gunicorn --workers 3 --bind 0.0.0.0:7000 filereader:app

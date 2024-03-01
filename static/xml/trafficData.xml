@@ -1,0 +1,35 @@
+<trafficData>
+    <road id="용산한강">
+        <congestion>원활</congestion>
+        <videoPath>/static/videos/yongsanhangang.mp4</videoPath>
+    </road>
+    <road id="강남대치동">
+        <congestion>원활</congestion>
+        <videoPath>/static/videos/gangnamdaechi.mp4</videoPath>
+    </road>
+    <road id="강남대로">
+        <congestion>원활</congestion>
+        <videoPath>/static/videos/gangnamdaero.mp4</videoPath>
+    </road>
+    <road id="가양대교북쪽">
+        <congestion>원활</congestion>
+        <videoPath>/static/videos/gayangdaegyonorth.mp4</videoPath>
+    </road>
+    <road id="가양IC">
+        <congestion>원활</congestion>
+        <videoPath>/static/videos/gayangIC.mp4</videoPath>
+    </road>
+    <road id="화양사거리">
+        <congestion>원활</congestion>
+        <videoPath>/static/videos/hwayangsagori.mp4</videoPath>
+    </road>
+    <road id="진암">
+        <congestion>원활</congestion>
+        <videoPath>/static/videos/jinam.mp4</videoPath>
+    </road>
+    <road id="철산대교">
+        <congestion>원활</congestion>
+        <videoPath>/static/videos/chulsandaegyo.mp4</videoPath>
+    </road>
+    <!-- 추가 도로 정보 -->
+</trafficData>

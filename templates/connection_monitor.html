@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Connection Monitor</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('/static/images/serv3r c0nn3ct1On.jpg');
+            background-position: center 50%;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        .container {
+            padding: 16px;
+            background-color: white;
+            width: 70%;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .server-status {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #e9e9e9;
+            border-radius: 5px;
+        }
+        .connected {
+            color: green;
+        }
+        .disconnected {
+            color: red;
+        }
+        .unknown {
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="/traffic">Traffic</a>
+        <a href="/connect">Connection Monitor</a>
+        <a href="/safety">Safety</a>
+        <a href="/db">Database</a>
+    </div>
+
+    <div class="container">
+        <h1>Server Connection Monitor</h1>
+        <div>
+            {% for server_name, status in server_statuses %}
+                <div class="server-status {{status|lower}}">
+                    <strong>{{ server_name }}</strong>: <span class="{{status|lower}}">{{ status }}</span>
+                </div>
+            {% else %}
+                <p>No server status to display.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

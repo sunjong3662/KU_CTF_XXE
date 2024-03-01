@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Safety Management System</title>
+    <style>
+     body, html {
+        height: 100%;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-image: url('/static/images/safety.jpg');
+        background-position: center 50%; /* 배경 이미지의 위치를 수직 방향으로 50% 지점에 배치 */
+        background-repeat: no-repeat;
+        background-size: cover; /* 이미지가 컨테이너를 적절히 커버하도록 조정 */
+        background-attachment: fixed; /* 배경 이미지가 스크롤 시 고정되도록 설정 */
+    }
+
+
+    @media (max-width: 768px) {
+        body, html {
+            background-position: center 25%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        body, html {
+            background-position: center 15%;
+        }
+    }
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        .container {
+            padding: 16px;
+            background-color: white;
+            width: 70%;
+            margin: auto;
+            margin-top: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #004a7c;
+        }
+        .status-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .status-item {
+            text-align: center;
+            padding: 10px;
+            margin: 10px;
+            flex-grow: 1;
+        }
+        .status-item h2 {
+            color: #004a7c;
+        }
+        .status-item p {
+            font-size: 18px;
+        }
+        /* Additional styles can be added as needed */
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="/traffic">Traffic</a>
+        <a href="/connect">Connection Monitor</a>
+        <a href="/safety">Safety</a>
+        <a href="/db">Database</a>
+    </div>
+
+    <div class="container">
+        <h1>City Safety Management System</h1>
+        <div class="status-container">
+            <div class="status-item">
+                <h2>Fire Alarms</h2>
+                <p>Active: 0</p>
+                <p>Inactive: 12</p>
+            </div>
+            <div class="status-item">
+                <h2>Security Cameras</h2>
+                <p>Online: 580</p>
+                <p>Offline: 21</p>
+            </div>
+            <div class="status-item">
+                <h2>Emergency Response</h2>
+                <p>Units Available: 8</p>
+                <p>Units Engaged: 2</p>
+            </div>
+        </div>
+        <!-- More status items can be added here -->
+    </div>
+</body>
+</html>
