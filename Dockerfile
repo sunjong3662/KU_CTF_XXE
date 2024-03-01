@@ -1,30 +1,26 @@
-FROM ubuntu:20.04
+FROM python:3.9-slim
+MAINTAINER "bulletproofbear@bulletproofyuri.kr"
 
-# 환경 설정 및 Python 설치를 위한 필수 패키지 설치
-RUN apt-get update && \
-    apt-get install -y python3-pip python3-dev && \
-    ln -sf /usr/bin/python3 /usr/bin/python && \
-    ln -sf /usr/bin/pip3 /usr/bin/pip && \
-    rm -rf /var/lib/apt/lists/*
 
 # 작업 디렉토리 설정.
 WORKDIR /app
 
-# Flask 앱의 의존성 파일 적은거 안에 복사함.
-COPY requirements.txt .
 
-# 복사한 저거 의존성 설치
-RUN pip install --no-cache-dir -r requirements.txt
+#  의존성 + 소스코드들 싸그리 싺싺 복사 / 여기서 . 은 WORKDIR을 의미함.
+COPY ./requirements.txt .
+COPY ./file .
+COPY ./flag/flag /etc/myrealpc
 
+#/app으로 복사된 의존성안에 있는 텍스트 추출해다가 모두 설치
+RUN pip install --no-cache-dir -r ./requirements.txt
 
-RUN echo "KUCTF{XXE_1nj3ct1On_1S_3asY_F0r_us}" > /etc/myrealpc
+# 필요한 실행 권한 설정
+RUN chmod 755 /etc/myrealpc
+RUN chmod +x ./init-mariadb.sh
 
-
-# 소스코드들 싸그리 싺싺 복사
-COPY . .
-
-# only 5000번이 나올 수 있음.
+# only 5000번만이 외부에 노출되는거임 ㅇㅇ
 EXPOSE 5000
 
 # gunicorn이용해서 5000번에 바인딩해서 외부에서 접속할 수 있게 하는거임...
+# 기존의 app.py자체 실행을 하는거 대신에 그냥 바로 5000번 열어다가 url로 접속하게 되면 나오게 하는거임.. app:app이 저거임.
 CMD ["gunicorn", "-w", "3", "-b", "0.0.0.0:5000", "app:app"]

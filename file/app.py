@@ -85,17 +85,17 @@ def traffic():
 def connect():
     try:
         parsingxml_response = requests.get('http://localhost:5000/parsingxml/status', timeout=10)
-        # 응답 문자열이 정확히 일치하는지 확인
-        parsingxml_status = "connected" if parsingxml_response.text == "{'status': 'Service is up'}" else "disconnected"
+        # HTTP 상태 코드가 200인 경우 "connected"로 판단
+        parsingxml_status = "connected" if parsingxml_response.status_code == 200 else "disconnected"
     except Exception:
-        parsingxml_status = "disconnected"
+        parsingxml_status = "unknown"
 
     try:
-        filereader_response = requests.get('http://127.0.0.1:7000/filereader/status', timeout=10)
-        # 응답 문자열이 정확히 일치하는지 확인
-        filereader_status = "connected" if filereader_response.text == "{'status': 'Service is up'}" else "disconnected"
+        filereader_response = requests.get('http://localhost:7000/filereader/status', timeout=10)
+        # HTTP 상태 코드가 200인 경우 "connected"로 판단
+        filereader_status = "connected" if filereader_response.status_code == 200 else "disconnected"
     except Exception:
-        filereader_status = "disconnected"
+        filereader_status = "unknown"
 
     server_statuses = [
         ("parsingxml:5000", parsingxml_status),
@@ -103,6 +103,7 @@ def connect():
         ("숨겨진 네트워크", "unknown")
     ]
     return render_template('connection_monitor.html', server_statuses=server_statuses)
+
 
 
 
