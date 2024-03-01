@@ -6,7 +6,7 @@ MAINTAINER "bulletproofbear@bulletproofyuri.kr"
 WORKDIR /app
 
 # Flask 앱의 의존성 파일 적은거 안에 복사함. (. 은 저기 WORKDIR정한거 와일드카드 형식으로 간략화 한거.)
-COPY requirements.txt /app
+COPY requirements.txt .
 
 #/app으로 복사된 의존성안에 있는 텍스트 추출해다가 모두 설치
 RUN pip install --no-cache-dir -r requirements.txt
