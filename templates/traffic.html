@@ -8,7 +8,7 @@
         body, html {
             height: 100%;
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-image: url('/static/images/도시.jpg');
             background-position: center;
             background-repeat: no-repeat;
@@ -26,6 +26,7 @@
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
+            transition: background-color 0.3s;
         }
         .navbar a:hover {
             background-color: #ddd;
@@ -39,7 +40,7 @@
         .traffic-controls button {
             padding: 10px 15px;
             margin: 5px;
-            background-color: #4CAF50;
+            background-color: #2952aa;
             color: white;
             border: none;
             border-radius: 5px;
@@ -131,8 +132,8 @@
         <a href="/">Home</a>
         <a href="/traffic">Traffic</a>
         <a href="/connect">Connection Monitor</a>
-        <a href="/safety">Safety</a>
-        <a href="/db">Database</a>
+        <a href="/serverlog">Server log</a>
+        <a href="/setting">Setting</a>
     </div>
     <div class="container">
         <h1 class="title">교통 상황 관리</h1>

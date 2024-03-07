@@ -16,10 +16,10 @@ def filereader():
 
     try:
         # 파일을 열고 내용을 읽습니다.
-        with open(file_path, 'r') as file:
+       with open(file_path, 'r') as file:
             content = file.read().strip()
         # 파일 내용을 JSON 형식으로 응답합니다.
-        return jsonify(content=content)
+            return jsonify(content=content)
     except Exception as e:
         app.logger.error(f"Error reading file: {e}")
         return jsonify(error=str(e)), 400
