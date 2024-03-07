@@ -12,8 +12,8 @@ __pycache__/
 # 로그 파일
 *.log
 
-# SQLite 데이터베이스
-*.sqlite
+# SQLite 데이터베이스(였던것)
+*.sqlite 
 
 # Vim 임시 파일
 *.swp
@@ -24,21 +24,9 @@ venv/
 env/
 virtualenv/
 
-# 히스토리 파일
-.history/
-
-# Visual Studio Code 서버 설정 파일
-.vscode-server/
-
-# EditorConfig 설정 파일
-.editorconfig
-
-# Java
-*.class
-*.jar
-*.war
 
 # 백업 파일
 *.bak
 
 /static/videos/*
+/uploads/*

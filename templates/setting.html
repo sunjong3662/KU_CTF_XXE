@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>server setting!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+
+        h1, h2 {
+            color: #007bff;
+        }
+
+        form {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        input[type="file"] {
+            margin-top: 15px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        ul li a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        ul li a:hover {
+            color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 85%;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar a {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="/traffic">Traffic</a>
+        <a href="/connect">Connection Monitor</a>
+        <a href="/serverlog">Server Log</a>
+        <a href="/setting">Setting</a>
+    </div>
+    <div class="container">
+        <h1>City Infrastructure Management Dashboard</h1>
+
+        <section>
+            <ul>
+            <h2>Current Infrastructure Configuration</h2>
+            <p>Check the current configuration of city infrastructure systems.</p>
+            <button onclick="fetchCurrentConfig()">Fetch Configuration</button>
+            <pre id="currentConfig">Configuration details will appear here...</pre>
+            </ul>
+        </section>
+
+        <form id="uploadForm" enctype="multipart/form-data">
+            <h2>Upload New Configuration for Traffic Management</h2>
+            <p>Update the traffic management system by uploading a new XML configuration file.</p>
+            <input type="file" name="file" id="file" accept=".xml">
+            <button type="submit">Upload Configuration</button>
+        </form>
+
+        <section>
+            <h2>Uploaded Configuration Files</h2>
+            <ul>
+                {% for file in files %}
+                    <li><a href="{{ url_for('download_log', filename=file) }}">{{ file }}</a></li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <form method="post" action="{{ url_for('reset_logs') }}">
+            <button type="submit">Reset Logs</button>
+        </form>
+    </div>
+
+    <script>
+        function fetchCurrentConfig() {
+            fetch('/config')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('currentConfig').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    console.error('Error fetching configuration:', error);
+                    document.getElementById('currentConfig').textContent = 'Failed to fetch configuration.';
+                });
+        }
+
+        document.getElementById('uploadForm').onsubmit = function(event) {
+    event.preventDefault(); // 기본 제출 방지
+    const formData = new FormData(this);
+    fetch('/upload', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.success);
+            location.reload(); // 페이지 새로 고침으로 파일 목록 업데이트
+        } else if (data.error) {
+            alert(data.error);
+        }
+    })
+    .catch(error => console.error('Error uploading configuration:', error));
+};
+    </script>
+</body>
+</html>
