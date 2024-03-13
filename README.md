@@ -1,5 +1,5 @@
 ### 문제 이름 : Fake Arasaka
-### 환경 : Linux(with Docker), Python
+### 환경 : Linux, Python
 ### 유형 : 웹 - XML eXternel Entity
 
 # 유의사항 
