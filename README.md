@@ -1,6 +1,6 @@
 ### 문제 이름 : Fake Arasaka
 ### 환경 : Linux, Python
-### 유형 : 웹 - XML eXternel Entity
+### 유형 : 웹 - XML eXternel Entity attack
 
 # 유의사항 
 - 현재 github에 올라와있는 파일에는 정답 파일(Flag file)을 빼놓을 예정입니다. 만약 정답이 나중에라도 필요하다 싶으면 아래의 이메일로 연락 주세요.
