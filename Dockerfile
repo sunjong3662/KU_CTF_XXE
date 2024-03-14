@@ -12,7 +12,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 #사실 flag파일로 둘까 생각했지만, 그냥 echo로 넣는다. ++ 권한
-RUN echo "KUCTF{XXE_1nj3ct1On_1S_3@sY_F0r_uS}" > /etc/myrealpc
+RUN echo "KUCTF{deleted flag.}" > /etc/myrealpc
 RUN chmod 755 /etc/myrealpc
 
 
