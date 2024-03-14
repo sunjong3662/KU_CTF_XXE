@@ -138,7 +138,6 @@
     <div class="container">
         <h1 class="title">교통 상황 관리</h1>
         
-        <!-- 모의 CCTV 영상 -->
         <div class="button-container">
             <button onclick="submitVideoRequest('용산한강')">용산한강</button>
             <button onclick="submitVideoRequest('강남대치동')">강남대치동</button>
@@ -154,21 +153,17 @@
             <iframe src="" title="CCTV 영상"></iframe>
         </div>
 
-        <!-- 도로 혼잡도 및 기타 정보 -->
         <div class="status-container">
             <div class="status-item">
                 <h2>도로 혼잡도</h2>
                 <p class="congestion-status">정보를 불러오는 중...</p>
-                <!-- 추가 도로 상태 정보 -->
             </div>
             <div class="status-item">
                 <h2>교통 상태 업데이트</h2>
                 <p>마지막 업데이트: NULL 분 전</p>
-                <!-- 실시간 교통 데이터 업데이트 -->
             </div>
         </div>
 
-        <!-- 추가 기능 버튼 및 링크 -->
     
     </div>
 
@@ -179,7 +174,6 @@
     xhr.open("POST", "/parsingxml", true);
     xhr.setRequestHeader("Content-Type", "application/xml");
 
-    // Include a reference to the external DTD in the XML data
     var xmlData = `<?xml version="1.0" encoding="UTF-8"?>
                     <!DOCTYPE trafficData SYSTEM "trafficData.dtd">
                     <request>
@@ -189,58 +183,49 @@
     
     xhr.onload = function () {
     if (xhr.status === 200) {
-        // 서버로부터 받은 XML 응답을 파싱
         var parser = new DOMParser();
         var xmlDoc = parser.parseFromString(xhr.responseText, "application/xml");
         var videoSrcElement = xmlDoc.getElementsByTagName("videoSrc")[0];
         
         if (videoSrcElement && videoSrcElement.textContent) {
-            // 비디오 경로로 비디오 업데이트
             document.querySelector('.video-container iframe').src = videoSrcElement.textContent;
         } else {
-            // videoSrcElement가 없거나 비어있는 경우 오류 처리
             console.error('No video source available.');
         }
     } else {
-        // 서버 응답이 200이 아닌 경우 오류 처리
         console.error('Failed to load video. Status:', xhr.status);
     }
 };
 
-    xhr.send(xmlData); // XML 데이터를 서버에 전송
+    xhr.send(xmlData);
 }
 
-    let roadsData = []; // 도로 정보를 저장할 배열
-    let currentRoadIndex = 0; // 현재 표시중인 도로 정보의 인덱스
+    let roadsData = [];
+    let currentRoadIndex = 0;
 
-    // 도로 혼잡도 정보를 서버로부터 가져오는 함수
     function fetchCongestionInfo() {
         fetch('/static/json/congestion.json')
             .then(response => response.json())
             .then(data => {
-                roadsData = Object.entries(data); // 객체를 [키, 값] 쌍의 배열로 변환하여 저장
-                updateCongestionStatus(); // 정보를 처음으로 업데이트
+                roadsData = Object.entries(data);
+                updateCongestionStatus();
             })
             .catch(error => {
                 console.error('Error fetching congestion data:', error);
             });
     }
 
-    // 도로 혼잡도 정보를 업데이트하는 함수
     function updateCongestionStatus() {
     if (roadsData.length > 0) {
-        let [roadName, roadStatus] = roadsData[currentRoadIndex]; // 현재 인덱스의 도로 이름과 상태를 추출
+        let [roadName, roadStatus] = roadsData[currentRoadIndex];
 
-        // 도로 혼잡도 정보를 페이지에 표시
         let statusParagraph = document.querySelector('.congestion-status');
         statusParagraph.innerText = `${roadName}: ${roadStatus}`;
         
-        // 다음 도로 정보로 인덱스 업데이트
         currentRoadIndex = (currentRoadIndex + 1) % roadsData.length;
     }
 }
 
-    // 페이지 로드 시 도로 혼잡도 정보를 가져오고, 4초마다 정보를 업데이트
     document.addEventListener('DOMContentLoaded', function() {
         fetchCongestionInfo();
         setInterval(updateCongestionStatus, 4000);

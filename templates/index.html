@@ -16,8 +16,8 @@
         position: relative;
     }
     a {
-    color: inherit; /* 링크 색상을 상위 요소와 일치하게 설정 */
-    text-decoration: none; /* 밑줄 제거 */
+    color: inherit;
+    text-decoration: none;
     }
     .container {
         position: absolute;
@@ -25,16 +25,16 @@
         left: 50%;
         transform: translate(-50%, -50%);
         padding: 20px;
-        background: rgba(255, 255, 255, 0.5); /* 불투명도 조정 */
+        background: rgba(255, 255, 255, 0.5);
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        width: 60%; /* 너비 비율 조정 */
-        max-width: 700px; /* 최대 너비 설정 */
+        width: 60%;
+        max-width: 700px;
         text-align: center;
         display: flex;
         flex-direction: column;
-        justify-content: space-around; /* 버튼 사이의 공간을 균등하게 분배 */
-        height: auto; /* 자동으로 높이 조정 */
+        justify-content: space-around;
+        height: auto;
     }
     .title {
         color: #000;
@@ -42,16 +42,16 @@
     }
     .button {
         padding: 15px 20px;
-        margin: 5px 0; /* 버튼 간격 */
+        margin: 5px 0;
         background: #f2f2f2;
         border: none;
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.3s ease, color 0.3s ease;
-        width: 80%; /* 버튼 너비 */
-        max-width: 300px; /* 버튼 최대 너비 */
+        width: 80%;
+        max-width: 300px;
         margin-left: auto;
-        margin-right: auto; /* 가운데 정렬 */
+        margin-right: auto;
     }
     .button:not(:active):hover {
         background: #ddd;
@@ -66,7 +66,6 @@
 
 <div class="container">
     <h1 class="title">도시 관리 서버에 오신걸 환영합니다!</h1>
-    <!-- 설정 버튼들 -->
     <a class="button" href="/traffic">교통 상황 관리</a>
     <a class="button" href="/connect">도시 관리 서버 간 연결 확인</a>
     <a class="button" href="/serverlog">서버 로그 관리</a>

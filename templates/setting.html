@@ -161,7 +161,7 @@
         }
 
         document.getElementById('uploadForm').onsubmit = function(event) {
-    event.preventDefault(); // 기본 제출 방지
+    event.preventDefault(); 
     const formData = new FormData(this);
     fetch('/upload', {
         method: 'POST',
@@ -171,7 +171,7 @@
     .then(data => {
         if (data.success) {
             alert(data.success);
-            location.reload(); // 페이지 새로 고침으로 파일 목록 업데이트
+            location.reload(); 
         } else if (data.error) {
             alert(data.error);
         }
