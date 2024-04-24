@@ -20,7 +20,7 @@
 --- 
 
 # 구성 방법.
-1. git clone
+1. ```git clone https://github.com/sunjong3662/KU_CTF_XXE```
    - 먼저 지금 git을 clone해서 문제 파일을 다운 받아줍니다.
    - 그 다음 다운 받아준 폴더 안으로 들어가줍니다.
 
