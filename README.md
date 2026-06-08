@@ -3,9 +3,6 @@
 ### 유형 : 웹 - XML eXternel Entity attack
 
 # 유의사항 
-- 현재 github에 올라와있는 파일에는 정답 파일(Flag file)을 빼놓을 예정입니다. 물론 정답이 뭐가 필요하겠냐만, 만약 정답이 나중에라도 필요하다 싶으면 아래의 이메일로 연락 주세요.
-  - bulletproofbear@bulletproofyuri.kr
-  - afhhddjjfdj@gmail.com
  
 - 기본적으로 Linux의 환경이면 docker-compose가 깔려있어야 하며, docker desktop도 같이 깔려 있어야 합니다. docker 다운로드 방법은 docker 홈페이지를 참고해주시길 바랍니다.
 
